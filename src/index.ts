@@ -4,6 +4,7 @@ import './env';
 import { BotDatabase } from './database';
 import { times } from './utils';
 import { regexps } from './regexps';
+import { messages } from './messages';
 
 let bot:Client;
 let database: BotDatabase;
@@ -27,8 +28,21 @@ async function handleMessage(msg: Message) {
         if (msg.guild){
             if (/^!rank$/.exec(msg.content)) {
                 const rank: number = await database.getUserRank(msg.author.id, msg.guild?.id);
-                if (rank) await msg.channel.send(`Поздравляю, ты матерился ${rank} ${times(rank)}`);
-                else await msg.channel.send('Поздравляю, ты ни разу не матерился');
+
+                if (rank) await msg.channel.send(`${messages.rank.count} ${rank} ${times(rank)}`);
+                else await msg.channel.send(messages.rank.never);
+            }
+            else if (/^!stats$/.exec(msg.content)) {
+                const stats = await database.getStats(msg.guild.id);
+                if (stats.length) {
+                    let messageStr = '';
+                    for (let i = 0; i < Math.min(stats.length, 3);) {
+                        messageStr += `${messages.stats.count[i]} <@${stats[i].user}>\n`;
+                        i++;
+                    }
+                    await msg.channel.send(messageStr);
+                }
+                else await msg.channel.send(messages.stats.never);
             }
             else {
                 for (const regexp in regexps) {

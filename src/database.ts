@@ -5,9 +5,17 @@ import { resolve } from 'path';
 import { regexps } from './regexps';
 import { existsAsync, mkdirAsync } from './utils';
 
-interface CountResult {
+interface RankResult {
     'count(*)': number
 }
+
+interface StatsRow {
+    user: string,
+    'count(*)': number
+}
+
+type StatsResult = Array<StatsRow>;
+
 
 class BotDatabase {
     private db: Database;
@@ -43,14 +51,26 @@ class BotDatabase {
     }
 
     async getUserRank(user: string, guild:string): Promise<number> {
-        const result: CountResult|undefined = await this.db.get(`SELECT count(*) FROM words_log
-                                     WHERE user='${user}'
-                                     AND guild='${guild}'
-                                     GROUP BY user;`);
+        const result: RankResult|undefined = await this.db.get(
+            `SELECT count(*) FROM words_log
+                             WHERE user='${user}'
+                             AND guild='${guild}'
+                             GROUP BY user;`
+        );
         if (result) {
             return result['count(*)'];
         }
         else return 0;
+    }
+
+    async getStats(guild: string): Promise<StatsResult> {
+        const result:StatsResult = await this.db.all(
+            `SELECT user, count(*) FROM words_log
+                                   WHERE guild='${guild}'
+                                   GROUP BY user
+                                   ORDER BY COUNT(*) DESC
+            `);
+        return result;
     }
 
     async close(): Promise<void> {

@@ -1,9 +1,8 @@
 import { exists, mkdir, PathLike } from 'fs';
+import { messages } from './messages';
 
 function times(times: number): string {
-    if (times % 10 <= 1 || times % 10 > 4) return 'раз';
-    if (1 < times % 10 && times % 10 < 5) return 'раза';
-    return '';
+    return messages.rank.times[times];
 }
 
 function existsAsync(path: PathLike): Promise<boolean> {

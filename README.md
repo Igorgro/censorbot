@@ -8,8 +8,9 @@ TOKEN=<your-bot-token>
 ```
 Then run
 ```bash
-npm build
-npm run
+npm install
+npm run build
+npm start
 ```
 
 ## Warning
