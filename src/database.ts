@@ -47,7 +47,6 @@ class BotDatabase {
                                      WHERE user='${user}'
                                      AND guild='${guild}'
                                      GROUP BY user;`);
-        console.log(result);
         if (result) {
             return result['count(*)'];
         }

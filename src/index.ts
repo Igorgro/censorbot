@@ -25,7 +25,7 @@ async function handleMessage(msg: Message) {
     if (msg.author.id != bot.user?.id) {
         // check if message recieved from guild
         if (msg.guild){
-            if (/rank/.exec(msg.content)) {
+            if (/^!rank$/.exec(msg.content)) {
                 const rank: number = await database.getUserRank(msg.author.id, msg.guild?.id);
                 if (rank) await msg.channel.send(`Поздравляю, ты матерился ${rank} ${times(rank)}`);
                 else await msg.channel.send('Поздравляю, ты ни разу не матерился');
@@ -34,6 +34,7 @@ async function handleMessage(msg: Message) {
                 for (const regexp in regexps) {
                     if ((new RegExp(regexp)).exec(msg.content)){
                         await database.addToLog(msg.author.id, msg.guild.id, regexps[regexp]);
+                        await msg.react('🤬');
                     }
                 }
             }
