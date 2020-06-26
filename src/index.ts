@@ -9,7 +9,7 @@ import { messages } from './messages';
 let bot:Client;
 let database: BotDatabase;
 
-async function init() {
+async function init(): Promise<void> {
     database = await BotDatabase.getDatabase();
     bot = new Client();
     bot.on('message', (msg) => {
@@ -18,10 +18,9 @@ async function init() {
 
     await bot.login(process.env.TOKEN);
     process.on('beforeExit', stop);
-    process.on('SIGTERM', stop);
 }
 
-async function handleMessage(msg: Message) {
+async function handleMessage(msg: Message): Promise<void> {
     // make bot ignore self messages
     if (msg.author.id != bot.user?.id) {
         // check if message recieved from guild
