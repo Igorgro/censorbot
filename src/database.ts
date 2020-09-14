@@ -77,14 +77,18 @@ class BotDatabase {
         await this.db.close();
     }
 
+    private static instance: BotDatabase;
+
     static async getDatabase(): Promise<BotDatabase> {
-        if (! await existsAsync(resolve(__dirname, '../database'))) {
-            await mkdirAsync(resolve(__dirname, '../database'));
+        if (!this.instance) {
+            if (! await existsAsync(resolve(__dirname, '../database'))) {
+                await mkdirAsync(resolve(__dirname, '../database'));
+            }
+            const db = await open({ filename: resolve(__dirname, '../database/database.db'), driver: sqlite3.Database });
+            this.instance = new BotDatabase(db);
+            await this.instance.init();
         }
-        const db = await open({ filename: resolve(__dirname, '../database/database.db'), driver: sqlite3.Database });
-        const database = new BotDatabase(db);
-        await database.init();
-        return database;
+        return this.instance;
     }
 }
 
